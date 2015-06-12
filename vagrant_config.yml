@@ -1,0 +1,7 @@
+# vagrant_config.yml
+boxconfig:
+  name: kalolo-vagrant-auto
+  box: ubuntu/trusty64
+  ram: 1024
+  ip: 192.168.50.9
+  www_projects: "/Users/kalolo/projects"

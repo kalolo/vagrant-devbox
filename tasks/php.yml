@@ -1,0 +1,17 @@
+---
+- name: install php
+  apt: name=php5 state=present
+
+- name: Install PHP Packages
+  sudo: yes
+  apt: pkg={{ item }} state=latest
+  with_items: 
+     - php5-mcrypt
+     - php-pear
+     - php5-curl
+     - php5-gd
+     - php5-mysql
+
+- name: Make sure php5-mcrypt is enabled
+  sudo: yes
+  shell: php5enmod mcrypt
