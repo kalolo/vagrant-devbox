@@ -2,17 +2,18 @@
 - name: install apache
   apt: name=apache2 state=present
 
-- name: restart apache
-  service: name=apache2 enabled=yes state=restarted
-
 - name: Apache Modules
   apache2_module: state=present name={{ item }}
-  notify: reload apache
   with_items:
     - rewrite
+    - macro
+- name: Copy macro vhost template
+  copy: src=../templates/vhost.macro.conf dest=/etc/apache2/conf-enabled/
 
 - name: Copy template vhost files templates/vhosts
   copy: src={{ item }} dest=/etc/apache2/sites-enabled/
   with_fileglob:
     - ../templates/vhosts/*
-  notify: reload apache
+
+- name: restart apache
+  service: name=apache2 enabled=yes state=restarted
