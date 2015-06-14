@@ -1,7 +1,10 @@
 # vagrant-devbox
 
 ## Installation
-
+    
+    $ git clone https://github.com/kalolo/vagrant-devbox
+    $ cd vagrant-devbox
+    $ brew install ansible
     $ vagrant plugin install vagrant-hostsupdater
 
 Edit vagrant_config.yml and set your information
