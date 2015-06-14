@@ -11,6 +11,13 @@ box_hostname = vconfig['boxconfig']['name']
 box_ip = vconfig['boxconfig']['ip']
 box_ram = vconfig['boxconfig']['ram']
 box_www_projects = vconfig['boxconfig']['www_projects']
+hostnames = Array.new
+
+
+Dir.foreach(box_www_projects) do |item|
+    next if item.start_with?(".")
+    hostnames.push item.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '') + "." + box_hostname
+end
 
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -18,6 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "ubuntu/trusty64"
   config.vm.hostname = box_hostname
   config.vm.network "private_network", ip: box_ip
+  config.hostsupdater.aliases = hostnames
 
   config.vm.provider "virtualbox" do |v|
       v.name = box_hostname
