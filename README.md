@@ -16,14 +16,13 @@ Edit vagrant_config.yml and set your information
       ip: <ip>
       www_projects: "<path where projects are located>"
 
+## Usage
+
 Bring up your box
 
     $ vagrant up
 
-
-## Usage
-
 To setup your own custom vhost, just create an apache vhost conf and put it on templates/vhosts/ as a .conf file, and you will need to reload provisions
 
 
-    $ vagrant reload --provision
+    $ vagrant provision

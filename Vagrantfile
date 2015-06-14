@@ -13,12 +13,16 @@ box_ram = vconfig['boxconfig']['ram']
 box_www_projects = vconfig['boxconfig']['www_projects']
 hostnames = Array.new
 
+macrovhost = ""
 
 Dir.foreach(box_www_projects) do |item|
     next if item.start_with?(".")
-    hostnames.push item.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '') + "." + box_hostname
+    host = item.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '') + "." + box_hostname
+    hostnames.push host
+    macrovhost += "Use VHost " + host + " 80 /var/www/html/" + item + " \n"
 end
 
+File.open("templates/vhosts/macrovhosts.conf", 'w') { |file| file.write(macrovhost) }
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
