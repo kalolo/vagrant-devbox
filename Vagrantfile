@@ -14,6 +14,7 @@ box_os           = vconfig['boxconfig']['box']
 box_www_projects = vconfig['boxconfig']['www_projects']
 
 hostnames  = Array.new
+synced_folders = Array.new
 macrovhost = ""
 
 Dir.foreach(box_www_projects) do |item|
@@ -22,6 +23,15 @@ Dir.foreach(box_www_projects) do |item|
     host = item.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '') + "." + box_hostname
     hostnames.push host
     macrovhost += "Use VHost " + host + " 80 /var/www/html/" + item + " \n"
+
+    real_path = box_www_projects + "/" + item
+
+    if ( File.symlink?real_path) 
+      real_path = File.readlink(real_path)
+    end
+
+    synced_folders.push({"name" => item, "path" => real_path})
+
 end
 
 File.open("templates/vhosts/macrovhosts.conf", 'w') { |file| file.write(macrovhost) }
@@ -38,14 +48,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       v.memory = box_ram
   end
 
-  # We should update this, and iterate a list of projects that way we can control a folder path or each
-  config.vm.synced_folder box_www_projects, "/var/www/html",
-  owner: "vagrant",
-  group: "www-data",
-  mount_options: ["dmode=775,fmode=664"]
+  synced_folders.each do |folder| 
+      config.vm.synced_folder folder['path'], "/var/www/html/" + folder['name'],
+      owner: "vagrant",
+      group: "www-data",
+      mount_options: ["dmode=775,fmode=664"]
+  end
 
   config.vm.provision :ansible do |ansible|
-    ansible.playbook = "playbook.yml"
+    ansible.playbook = "app/playbook.yml"
   end 
 
 end
