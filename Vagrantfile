@@ -5,18 +5,20 @@
 VAGRANTFILE_API_VERSION = "2"
 
 require 'yaml'
-vconfig = YAML.load_file "vagrant_config.yml"
+vconfig = YAML.load_file "conf/vagrant_config.yml"
 
-box_hostname = vconfig['boxconfig']['name']
-box_ip = vconfig['boxconfig']['ip']
-box_ram = vconfig['boxconfig']['ram']
+box_hostname     = vconfig['boxconfig']['name']
+box_ip           = vconfig['boxconfig']['ip']
+box_ram          = vconfig['boxconfig']['ram']
+box_os           = vconfig['boxconfig']['box']
 box_www_projects = vconfig['boxconfig']['www_projects']
-hostnames = Array.new
 
+hostnames  = Array.new
 macrovhost = ""
 
 Dir.foreach(box_www_projects) do |item|
-    next if item.start_with?(".")
+    next if item.start_with?(".") || !File.directory?(box_www_projects + "/" + item)
+
     host = item.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '') + "." + box_hostname
     hostnames.push host
     macrovhost += "Use VHost " + host + " 80 /var/www/html/" + item + " \n"
@@ -26,7 +28,7 @@ File.open("templates/vhosts/macrovhosts.conf", 'w') { |file| file.write(macrovho
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = box_os
   config.vm.hostname = box_hostname
   config.vm.network "private_network", ip: box_ip
   config.hostsupdater.aliases = hostnames
@@ -36,6 +38,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       v.memory = box_ram
   end
 
+  # We should update this, and iterate a list of projects that way we can control a folder path or each
   config.vm.synced_folder box_www_projects, "/var/www/html",
   owner: "vagrant",
   group: "www-data",
