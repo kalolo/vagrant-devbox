@@ -1,6 +1,11 @@
 # vagrant-devbox
 
 ## Installation
+
+- Install [Virtual Box](https://www.virtualbox.org/wiki/Downloads) as vm provider
+- Install [Vagrant](http://docs.vagrantup.com/v2/installation/)
+
+The on the terminal
     
     $ git clone https://github.com/kalolo/vagrant-devbox
     $ cd vagrant-devbox
