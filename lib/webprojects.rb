@@ -4,12 +4,13 @@ class WebProjects
 	@synced_folders
 
 	def initialize(projects_path, hostname)
-		@path = projects_path.sub(/(\/)+$/,'') + '/'
-		@hostname = hostname
 
+		@hostname = hostname
 		@synced_folders = Array.new
 
-		self.scanProjects
+        # I should change this to pick all elements added on projects path
+		self.scanProjects(projects_path['www'], 'www')
+		self.scanProjects(projects_path['laravel'], 'laravel')
 
 	end
 
@@ -26,12 +27,14 @@ class WebProjects
     	return @synced_folders
     end
 	 
-	def scanProjects
+	def scanProjects(path, type)
 
-        Dir.foreach(@path) do |item|
-            next if item.start_with?(".") || !File.directory?(real_path = self.getPath(item))
+		path = path.sub(/(\/)+$/,'') + '/'
 
-            @synced_folders.push({name: item, path: real_path, hostname: slug(item)})
+        Dir.foreach(path) do |item|
+            next if item.start_with?(".") || !File.directory?(real_path = self.getPath(path + item))
+
+            @synced_folders.push({name: item, path: real_path, hostname: slug(item), type: type})
         end
 
 	end
@@ -40,19 +43,14 @@ class WebProjects
     	return name.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '') + "." + @hostname
     end
 
-	def getPath(item)
-		path = @path + item
-		return (File.symlink?path) ? File.readlink(path) : path
+	def getPath(directory)
+		return (File.symlink?directory) ? File.readlink(directory) : directory
 	end
 
 
 	def writeMacroHosts(path)
 		macrovhost = ""
-
-		puts ">> Writing macro hosts"
-
-
-		self.syncedFolders.each { |proj|  macrovhost += "Use VHost " + proj[:hostname] + " 80 /var/www/html/" + proj[:name] + " \n" }
+		self.syncedFolders.each { |proj|  macrovhost += "Use " + ( ( proj[:type] == 'www') ? 'VHost' : 'laravel' ) + " " + proj[:hostname] + " 80 /var/www/html/" + proj[:name] + " \n" }
 		File.open(path, 'w') { |file| file.write(macrovhost) }
 	end
 end 

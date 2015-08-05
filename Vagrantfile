@@ -9,14 +9,12 @@ require_relative 'lib/webprojects'
 
 vconfig = YAML.load_file "conf/vagrant_config.yml"
 
-box_hostname     = vconfig['boxconfig']['name']
-box_ip           = vconfig['boxconfig']['ip']
-box_ram          = vconfig['boxconfig']['ram']
-box_os           = vconfig['boxconfig']['box']
-box_www_projects = vconfig['boxconfig']['www_projects']
-webProjects      = WebProjects.new(box_www_projects, box_hostname)
+box_hostname = vconfig['boxconfig']['name']
+box_ip       = vconfig['boxconfig']['ip']
+box_ram      = vconfig['boxconfig']['ram']
+box_os       = vconfig['boxconfig']['box']
+webProjects  = WebProjects.new(vconfig['boxconfig']['apache_projects'], box_hostname)
 
-puts webProjects.syncedFolders
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
@@ -24,6 +22,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.hostname = box_hostname
   config.vm.network "private_network", ip: box_ip
   config.hostsupdater.aliases = webProjects.hostnames
+  config.vm.network "forwarded_port", guest: 80, host: 8080
 
   config.vm.provider "virtualbox" do |v|
       v.name = box_hostname
@@ -41,8 +40,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision :ansible do |ansible|
     ansible.playbook = "app/playbook.yml"
-  end 
-
-   puts webProjects.hostnames
+  end
 
 end
