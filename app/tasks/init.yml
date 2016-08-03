@@ -7,6 +7,17 @@
   sudo: yes
   apt: pkg={{ item }} state=latest
   with_items:
+    - build-essential
     - curl
     - wget
     - python-software-properties
+    - git
+    - nodejs
+    - npm
+    - vim
+
+- name: Installing Gulp
+  shell: npm install --global gulp
+
+- name: Installing bower
+  shell: npm install -g bower

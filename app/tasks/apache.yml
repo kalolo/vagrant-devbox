@@ -9,7 +9,7 @@
     - macro
 
 - name: Copy macro vhost template
-  copy: src=../../templates/vhost.macro.conf dest=/etc/apache2/conf-enabled/
+  copy: src=../../templates/www.macro.conf dest=/etc/apache2/conf-enabled/
 
 - name: Copy macro laravel template
   copy: src=../../templates/laravel.macro.conf dest=/etc/apache2/conf-enabled/

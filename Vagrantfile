@@ -22,14 +22,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.hostname = box_hostname
   config.vm.network "private_network", ip: box_ip
   config.hostsupdater.aliases = webProjects.hostnames
-  config.vm.network "forwarded_port", guest: 80, host: 8080
+  #config.vm.network "forwarded_port", guest: 80, host: 8080
+
+  config.vm.define box_hostname do |t|
+  end
 
   config.vm.provider "virtualbox" do |v|
       v.name = box_hostname
       v.memory = box_ram
   end
 
-  webProjects.syncedFolders.each do |folder| 
+  webProjects.syncedFolders.each do |folder|
       config.vm.synced_folder folder[:path], "/var/www/html/" + folder[:name],
       owner: "vagrant",
       group: "www-data",
@@ -39,6 +42,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   webProjects.writeMacroHosts("templates/vhosts/macrovhosts.conf")
 
   config.vm.provision :ansible do |ansible|
+    ansible.extra_vars = {box_ip: box_ip}
     ansible.playbook = "app/playbook.yml"
   end
 
