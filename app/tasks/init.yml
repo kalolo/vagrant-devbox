@@ -1,8 +1,4 @@
 ---
-- name: Update apt
-  sudo: yes
-  apt: update_cache=yes
-
 - name: Install System Packages
   sudo: yes
   apt: pkg={{ item }} state=latest
@@ -15,6 +11,7 @@
     - nodejs
     - npm
     - vim
+    - imagemagick
 
 - name: Installing Gulp
   shell: npm install --global gulp

@@ -1,17 +1,32 @@
 ---
+- name: Add php5.6 repo
+  apt_repository: repo='ppa:ondrej/php' state=present
+
+- name: Update apt
+  sudo: yes
+  apt: update_cache=yes
+
 - name: install php
-  apt: name=php5 state=present
+  apt: name=php5.6 state=present
 
 - name: Install PHP Packages
   sudo: yes
   apt: pkg={{ item }} state=latest
-  with_items: 
+  with_items:
+     - php5.6-mysql
      - php5-mcrypt
      - php-pear
      - php5-curl
-     - php5-gd
-     - php5-mysql
+     - libapache2-mod-php5.6
+     - php5.6-mbstring
+     - php5.6-xml
+     - php5-imagick
+     - php5.6-imagick
 
 - name: Make sure php5-mcrypt is enabled
   sudo: yes
   shell: php5enmod mcrypt
+
+- name: Enable mbstring
+  sudo: yes
+  shell: phpenmod mbstring

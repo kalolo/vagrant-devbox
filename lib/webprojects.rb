@@ -38,7 +38,6 @@ class WebProjects
 
 		Dir.foreach(path) do |item|
 			next if item.start_with?(".") || !File.directory?(real_path = self.getPath(path + item))
-
 			@synced_folders.push({name: item, path: real_path, hostname: slug(item), type: type})
 		end
 

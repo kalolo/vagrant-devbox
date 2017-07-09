@@ -1,10 +1,17 @@
 ---
+#- name: Adding mysql 5.7 deb
+#  shell: wget http://dev.mysql.com/get/mysql-apt-config_0.6.0-1_all.deb -O /tmp/mysql-apt-config_0.6.0-1_all.deb | sudo dpkg -i /tmp/mysql-apt-config_0.6.0-1_all.deb
+
+#- name: Update apt
+#  sudo: yes
+#  apt: update_cache=yes
+
 - name: install mysql
   apt:
     name: "{{ item }}"
   with_items:
     - python-mysqldb
-    - mysql-server
+    - mysql-server-5.6
 
 - name: copy .my.cnf
   template:
@@ -27,8 +34,6 @@
   with_items:
     - "{{ box_ip }}"
     - 127.0.0.1
-    - 192.168.50.9
-    - 192.168.50.1
     - ::1
     - localhost
     - "*"
