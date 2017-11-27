@@ -22,6 +22,7 @@
      - php5.6-xml
      - php5-imagick
      - php5.6-imagick
+     - php5.6-zip
 
 - name: Make sure php5-mcrypt is enabled
   sudo: yes
